@@ -71,14 +71,34 @@ describe Seriensieger do
       sieger.generate_guess(sieger.match_data.last[:match_id]).should == [2, 1]
     end
 
-    it "returns 4:0 on previous 4:0, 0:0" do
+    it "returns 3:0 on previous 2:0, 0:2" do
+      sieger = Seriensieger.new
+      sieger.match_data = match_data([
+        finished_match(id_team1: 1, id_team2: 3, points_team1: 2),
+        finished_match(id_team1: 3, id_team2: 2, points_team1: 2, points_team2: 0),
+        a_match
+      ])
+      sieger.generate_guess(sieger.match_data.last[:match_id]).should == [3, 0]
+    end
+
+    it "returns 3:0 on previous 4:0, 0:0" do
       sieger = Seriensieger.new
       sieger.match_data = match_data([
         finished_match(id_team1: 1, id_team2: 3, points_team1: 4),
         finished_match(id_team1: 3, id_team2: 2, points_team2: 0),
         a_match
       ])
-      sieger.generate_guess(sieger.match_data.last[:match_id]).should == [4, 0]
+      sieger.generate_guess(sieger.match_data.last[:match_id]).should == [3, 0]
+    end
+
+    it "returns 2:1 on previous 4:2, 1:0" do
+      sieger = Seriensieger.new
+      sieger.match_data = match_data([
+        finished_match(id_team1: 1, id_team2: 3, points_team1: 4, points_team2: 2),
+        finished_match(id_team1: 3, id_team2: 2, points_team1: 0, points_team2: 1),
+        a_match
+      ])
+      sieger.generate_guess(sieger.match_data.last[:match_id]).should == [2, 1]
     end
   end
 
@@ -88,7 +108,7 @@ describe Seriensieger do
       sieger.match_data = match_data([
         finished_match,
         a_match(match_date_time: Time.at(Time.now + 60*60*2).iso8601),
-        a_match(match_date_time: Time.at(Time.now + 60*60*25).iso8601)
+        a_match(match_date_time: Time.at(Time.now + 60*60*24*5).iso8601)
       ])
       sieger.matches_to_guess.length.should == 1
       sieger.matches_to_guess.should == [sieger.match_data[1][:match_id]]
@@ -99,11 +119,11 @@ describe Seriensieger do
     it "sends one guess for each next match" do
       sieger = Seriensieger.new
       sieger.match_data = match_data([
-        a_match
+        a_match(match_date_time: Time.at(Time.now + 60*60*2).iso8601)
       ])
       mock_submitter = double('submitter')
       mock_submitter.should_receive(:submit)
-      sieger.guess_all(mock_submitter)
+      sieger.guess_next(mock_submitter)
     end
   end
 

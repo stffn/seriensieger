@@ -33,8 +33,10 @@ class Seriensieger
 
     goal_quantity = (last_result_team1.first + last_result_team1.last +
                      last_result_team2.first + last_result_team2.last) / 2.0
+    goal_quantity = 2 + ((goal_quantity - 2) * 0.4).round if goal_quantity > 2
     goal_difference = last_result_team1.first - last_result_team1.last - 
         (last_result_team2.first - last_result_team2.last)
+    goal_difference = 2 + ((goal_difference - 2) * 0.4).round if goal_difference > 2
 
     [
       [0, (goal_quantity / 2.0 + goal_difference / 2.0).round].max,
@@ -45,7 +47,7 @@ class Seriensieger
   def matches_to_guess
     match_data.select {|match| !match[:match_is_finished] and
           match[:match_date_time] > Time.now and
-          match[:match_date_time] < Time.now + 60*60*24}.
+          match[:match_date_time] < Time.now + 60*60*24*4}.
       map {|match| match[:match_id]}
   end
 
@@ -83,12 +85,12 @@ end
 class SeasonDataLoader
   URL_FORMAT = "http://openligadb-json.heroku.com/api/matchdata_by_league_saison?league_saison=%{season}&league_shortcut=bl1"
   def get (season)
-    puts "Loading data for #{season}..."
+    #puts "Loading data for #{season}..."
     response = Net::HTTP.get_response URI.parse(url_for_season(season))
     if response.is_a?(Net::HTTPSuccess)
       json_data = JSON.parse(response.body)
       raise "Unexpected result body.  Missing data['matchdata']." unless json_data.is_a?(Hash) and json_data['matchdata']
-      puts "Received data on #{json_data['matchdata'].length} matches."
+      #puts "Received data on #{json_data['matchdata'].length} matches."
       json_data['matchdata'].map do |raw_data|
         raw_data.each_with_object({}) {|(key,val),hash| hash[key.to_sym] = val}
       end
