@@ -1,1 +1,8 @@
-Sourcecode kommt...
+Seriensieger guesses based on the most recent results.  Probably less
+precise than the "guess-all-as-2:1" approach.  :/
+
+Submit guesses by calling guess.rb
+
+seriensieger.rb expects a config.rb file with the bot token, e.g.
+
+  BOT_TOKEN = "..."

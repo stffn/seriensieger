@@ -35,10 +35,10 @@ end
 
 describe Seriensieger do
   describe "#generate_guess" do
-    it "returns 0:0 on first game" do
+    it "returns 2:1 on first game" do
       sieger = Seriensieger.new
       sieger.match_data = match_data([a_match])
-      sieger.generate_guess(sieger.match_data.first[:match_id]).should == [0, 0]
+      sieger.generate_guess(sieger.match_data.first[:match_id]).should == [2, 1]
     end
 
     it "returns 2:0 on previous 1:0, 0:1" do

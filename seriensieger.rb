@@ -28,8 +28,8 @@ class Seriensieger
           [the_match[:points_team2], the_match[:points_team1]] if the_match[:id_team2] == id_team2
       break if last_result_team1 and last_result_team2
     end
-    last_result_team1 ||= [0, 0]
-    last_result_team2 ||= [0, 0]
+
+    return [2, 1] unless last_result_team1 and last_result_team2
 
     goal_quantity = (last_result_team1.first + last_result_team1.last +
                      last_result_team2.first + last_result_team2.last) / 2.0
